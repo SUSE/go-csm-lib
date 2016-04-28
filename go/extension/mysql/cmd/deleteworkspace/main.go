@@ -30,7 +30,7 @@ func main() {
 
 	extension := mysql.NewMySQLExtension(prov, conf, logger)
 
-	response, err := extension.CreateConnection(request.WorkspaceID, request.ConnectionID)
+	response, err := extension.DeleteWorkspace(request.WorkspaceID)
 	if err != nil {
 		csmConnection.WriteError(err)
 		os.Exit(0)

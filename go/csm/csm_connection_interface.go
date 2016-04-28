@@ -1,5 +1,6 @@
 package csm
 
 type CSMConnection interface {
-	SendResponse()
+	Write(response CSMResponse) error
+	WriteError(err error) error
 }
