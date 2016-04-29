@@ -19,5 +19,5 @@ func TestCSMResponse(t *testing.T) {
 
 	assert.Equal(200, response.HttpCode)
 	assert.Equal(details, response.Details)
-	assert.Equal("Successful", response.Status)
+	assert.Equal("successful", response.Status)
 }

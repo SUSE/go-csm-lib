@@ -3,6 +3,7 @@ package csm
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -62,6 +63,7 @@ func TestCSMFileConnectionWriteStruct(t *testing.T) {
 	assert := assert.New(t)
 
 	testFile, err := ioutil.TempFile(os.TempDir(), "prefix")
+	fmt.Println(testFile.Name())
 	defer os.Remove(testFile.Name())
 
 	connection := NewCSMFileConnection(testFile.Name())

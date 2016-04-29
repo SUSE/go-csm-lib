@@ -5,19 +5,10 @@ import (
 	"database/sql"
 	"sync"
 
-	"github.com/hpcloud/sidecar-extensions/go/extensions/mysql/config"
-	"github.com/hpcloud/sidecar-extensions/go/extensions/mysql/provisioner"
+	"github.com/hpcloud/sidecar-extensions/go/extension/mysql/provisioner"
 )
 
-type FakeMysqlProvisionerInterface struct {
-	ConnectStub        func(config.MysqlDriverConfig) error
-	connectMutex       sync.RWMutex
-	connectArgsForCall []struct {
-		arg1 config.MysqlDriverConfig
-	}
-	connectReturns struct {
-		result1 error
-	}
+type FakeMySQLProvisioner struct {
 	IsDatabaseCreatedStub        func(string) (bool, error)
 	isDatabaseCreatedMutex       sync.RWMutex
 	isDatabaseCreatedArgsForCall []struct {
@@ -82,39 +73,7 @@ type FakeMysqlProvisionerInterface struct {
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) Connect(arg1 config.MysqlDriverConfig) error {
-	fake.connectMutex.Lock()
-	fake.connectArgsForCall = append(fake.connectArgsForCall, struct {
-		arg1 config.MysqlDriverConfig
-	}{arg1})
-	fake.connectMutex.Unlock()
-	if fake.ConnectStub != nil {
-		return fake.ConnectStub(arg1)
-	} else {
-		return fake.connectReturns.result1
-	}
-}
-
-func (fake *FakeMysqlProvisionerInterface) ConnectCallCount() int {
-	fake.connectMutex.RLock()
-	defer fake.connectMutex.RUnlock()
-	return len(fake.connectArgsForCall)
-}
-
-func (fake *FakeMysqlProvisionerInterface) ConnectArgsForCall(i int) config.MysqlDriverConfig {
-	fake.connectMutex.RLock()
-	defer fake.connectMutex.RUnlock()
-	return fake.connectArgsForCall[i].arg1
-}
-
-func (fake *FakeMysqlProvisionerInterface) ConnectReturns(result1 error) {
-	fake.ConnectStub = nil
-	fake.connectReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeMysqlProvisionerInterface) IsDatabaseCreated(arg1 string) (bool, error) {
+func (fake *FakeMySQLProvisioner) IsDatabaseCreated(arg1 string) (bool, error) {
 	fake.isDatabaseCreatedMutex.Lock()
 	fake.isDatabaseCreatedArgsForCall = append(fake.isDatabaseCreatedArgsForCall, struct {
 		arg1 string
@@ -127,19 +86,19 @@ func (fake *FakeMysqlProvisionerInterface) IsDatabaseCreated(arg1 string) (bool,
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) IsDatabaseCreatedCallCount() int {
+func (fake *FakeMySQLProvisioner) IsDatabaseCreatedCallCount() int {
 	fake.isDatabaseCreatedMutex.RLock()
 	defer fake.isDatabaseCreatedMutex.RUnlock()
 	return len(fake.isDatabaseCreatedArgsForCall)
 }
 
-func (fake *FakeMysqlProvisionerInterface) IsDatabaseCreatedArgsForCall(i int) string {
+func (fake *FakeMySQLProvisioner) IsDatabaseCreatedArgsForCall(i int) string {
 	fake.isDatabaseCreatedMutex.RLock()
 	defer fake.isDatabaseCreatedMutex.RUnlock()
 	return fake.isDatabaseCreatedArgsForCall[i].arg1
 }
 
-func (fake *FakeMysqlProvisionerInterface) IsDatabaseCreatedReturns(result1 bool, result2 error) {
+func (fake *FakeMySQLProvisioner) IsDatabaseCreatedReturns(result1 bool, result2 error) {
 	fake.IsDatabaseCreatedStub = nil
 	fake.isDatabaseCreatedReturns = struct {
 		result1 bool
@@ -147,7 +106,7 @@ func (fake *FakeMysqlProvisionerInterface) IsDatabaseCreatedReturns(result1 bool
 	}{result1, result2}
 }
 
-func (fake *FakeMysqlProvisionerInterface) IsUserCreated(arg1 string) (bool, error) {
+func (fake *FakeMySQLProvisioner) IsUserCreated(arg1 string) (bool, error) {
 	fake.isUserCreatedMutex.Lock()
 	fake.isUserCreatedArgsForCall = append(fake.isUserCreatedArgsForCall, struct {
 		arg1 string
@@ -160,19 +119,19 @@ func (fake *FakeMysqlProvisionerInterface) IsUserCreated(arg1 string) (bool, err
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) IsUserCreatedCallCount() int {
+func (fake *FakeMySQLProvisioner) IsUserCreatedCallCount() int {
 	fake.isUserCreatedMutex.RLock()
 	defer fake.isUserCreatedMutex.RUnlock()
 	return len(fake.isUserCreatedArgsForCall)
 }
 
-func (fake *FakeMysqlProvisionerInterface) IsUserCreatedArgsForCall(i int) string {
+func (fake *FakeMySQLProvisioner) IsUserCreatedArgsForCall(i int) string {
 	fake.isUserCreatedMutex.RLock()
 	defer fake.isUserCreatedMutex.RUnlock()
 	return fake.isUserCreatedArgsForCall[i].arg1
 }
 
-func (fake *FakeMysqlProvisionerInterface) IsUserCreatedReturns(result1 bool, result2 error) {
+func (fake *FakeMySQLProvisioner) IsUserCreatedReturns(result1 bool, result2 error) {
 	fake.IsUserCreatedStub = nil
 	fake.isUserCreatedReturns = struct {
 		result1 bool
@@ -180,7 +139,7 @@ func (fake *FakeMysqlProvisionerInterface) IsUserCreatedReturns(result1 bool, re
 	}{result1, result2}
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateDatabase(arg1 string) error {
+func (fake *FakeMySQLProvisioner) CreateDatabase(arg1 string) error {
 	fake.createDatabaseMutex.Lock()
 	fake.createDatabaseArgsForCall = append(fake.createDatabaseArgsForCall, struct {
 		arg1 string
@@ -193,26 +152,26 @@ func (fake *FakeMysqlProvisionerInterface) CreateDatabase(arg1 string) error {
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateDatabaseCallCount() int {
+func (fake *FakeMySQLProvisioner) CreateDatabaseCallCount() int {
 	fake.createDatabaseMutex.RLock()
 	defer fake.createDatabaseMutex.RUnlock()
 	return len(fake.createDatabaseArgsForCall)
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateDatabaseArgsForCall(i int) string {
+func (fake *FakeMySQLProvisioner) CreateDatabaseArgsForCall(i int) string {
 	fake.createDatabaseMutex.RLock()
 	defer fake.createDatabaseMutex.RUnlock()
 	return fake.createDatabaseArgsForCall[i].arg1
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateDatabaseReturns(result1 error) {
+func (fake *FakeMySQLProvisioner) CreateDatabaseReturns(result1 error) {
 	fake.CreateDatabaseStub = nil
 	fake.createDatabaseReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteDatabase(arg1 string) error {
+func (fake *FakeMySQLProvisioner) DeleteDatabase(arg1 string) error {
 	fake.deleteDatabaseMutex.Lock()
 	fake.deleteDatabaseArgsForCall = append(fake.deleteDatabaseArgsForCall, struct {
 		arg1 string
@@ -225,26 +184,26 @@ func (fake *FakeMysqlProvisionerInterface) DeleteDatabase(arg1 string) error {
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteDatabaseCallCount() int {
+func (fake *FakeMySQLProvisioner) DeleteDatabaseCallCount() int {
 	fake.deleteDatabaseMutex.RLock()
 	defer fake.deleteDatabaseMutex.RUnlock()
 	return len(fake.deleteDatabaseArgsForCall)
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteDatabaseArgsForCall(i int) string {
+func (fake *FakeMySQLProvisioner) DeleteDatabaseArgsForCall(i int) string {
 	fake.deleteDatabaseMutex.RLock()
 	defer fake.deleteDatabaseMutex.RUnlock()
 	return fake.deleteDatabaseArgsForCall[i].arg1
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteDatabaseReturns(result1 error) {
+func (fake *FakeMySQLProvisioner) DeleteDatabaseReturns(result1 error) {
 	fake.DeleteDatabaseStub = nil
 	fake.deleteDatabaseReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeMysqlProvisionerInterface) Query(arg1 string, arg2 ...interface{}) (*sql.Rows, error) {
+func (fake *FakeMySQLProvisioner) Query(arg1 string, arg2 ...interface{}) (*sql.Rows, error) {
 	fake.queryMutex.Lock()
 	fake.queryArgsForCall = append(fake.queryArgsForCall, struct {
 		arg1 string
@@ -258,19 +217,19 @@ func (fake *FakeMysqlProvisionerInterface) Query(arg1 string, arg2 ...interface{
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) QueryCallCount() int {
+func (fake *FakeMySQLProvisioner) QueryCallCount() int {
 	fake.queryMutex.RLock()
 	defer fake.queryMutex.RUnlock()
 	return len(fake.queryArgsForCall)
 }
 
-func (fake *FakeMysqlProvisionerInterface) QueryArgsForCall(i int) (string, []interface{}) {
+func (fake *FakeMySQLProvisioner) QueryArgsForCall(i int) (string, []interface{}) {
 	fake.queryMutex.RLock()
 	defer fake.queryMutex.RUnlock()
 	return fake.queryArgsForCall[i].arg1, fake.queryArgsForCall[i].arg2
 }
 
-func (fake *FakeMysqlProvisionerInterface) QueryReturns(result1 *sql.Rows, result2 error) {
+func (fake *FakeMySQLProvisioner) QueryReturns(result1 *sql.Rows, result2 error) {
 	fake.QueryStub = nil
 	fake.queryReturns = struct {
 		result1 *sql.Rows
@@ -278,7 +237,7 @@ func (fake *FakeMysqlProvisionerInterface) QueryReturns(result1 *sql.Rows, resul
 	}{result1, result2}
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateUser(arg1 string, arg2 string, arg3 string) error {
+func (fake *FakeMySQLProvisioner) CreateUser(arg1 string, arg2 string, arg3 string) error {
 	fake.createUserMutex.Lock()
 	fake.createUserArgsForCall = append(fake.createUserArgsForCall, struct {
 		arg1 string
@@ -293,26 +252,26 @@ func (fake *FakeMysqlProvisionerInterface) CreateUser(arg1 string, arg2 string, 
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateUserCallCount() int {
+func (fake *FakeMySQLProvisioner) CreateUserCallCount() int {
 	fake.createUserMutex.RLock()
 	defer fake.createUserMutex.RUnlock()
 	return len(fake.createUserArgsForCall)
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateUserArgsForCall(i int) (string, string, string) {
+func (fake *FakeMySQLProvisioner) CreateUserArgsForCall(i int) (string, string, string) {
 	fake.createUserMutex.RLock()
 	defer fake.createUserMutex.RUnlock()
 	return fake.createUserArgsForCall[i].arg1, fake.createUserArgsForCall[i].arg2, fake.createUserArgsForCall[i].arg3
 }
 
-func (fake *FakeMysqlProvisionerInterface) CreateUserReturns(result1 error) {
+func (fake *FakeMySQLProvisioner) CreateUserReturns(result1 error) {
 	fake.CreateUserStub = nil
 	fake.createUserReturns = struct {
 		result1 error
 	}{result1}
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteUser(arg1 string) error {
+func (fake *FakeMySQLProvisioner) DeleteUser(arg1 string) error {
 	fake.deleteUserMutex.Lock()
 	fake.deleteUserArgsForCall = append(fake.deleteUserArgsForCall, struct {
 		arg1 string
@@ -325,23 +284,23 @@ func (fake *FakeMysqlProvisionerInterface) DeleteUser(arg1 string) error {
 	}
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteUserCallCount() int {
+func (fake *FakeMySQLProvisioner) DeleteUserCallCount() int {
 	fake.deleteUserMutex.RLock()
 	defer fake.deleteUserMutex.RUnlock()
 	return len(fake.deleteUserArgsForCall)
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteUserArgsForCall(i int) string {
+func (fake *FakeMySQLProvisioner) DeleteUserArgsForCall(i int) string {
 	fake.deleteUserMutex.RLock()
 	defer fake.deleteUserMutex.RUnlock()
 	return fake.deleteUserArgsForCall[i].arg1
 }
 
-func (fake *FakeMysqlProvisionerInterface) DeleteUserReturns(result1 error) {
+func (fake *FakeMySQLProvisioner) DeleteUserReturns(result1 error) {
 	fake.DeleteUserStub = nil
 	fake.deleteUserReturns = struct {
 		result1 error
 	}{result1}
 }
 
-var _ provisioner.MysqlProvisionerInterface = new(FakeMysqlProvisionerInterface)
+var _ provisioner.MySQLProvisioner = new(FakeMySQLProvisioner)
