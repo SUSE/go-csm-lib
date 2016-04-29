@@ -9,15 +9,15 @@ import (
 	"strings"
 )
 
-func NormalizeID(id string) string {
-	dbName := "d" + strings.Replace(id, "-", "", -1)
-	dbName = strings.Replace(dbName, "`", "", -1)
-	dbName = strings.Replace(dbName, ";", "", -1)
-	if len(dbName) > 64 {
-		dbName = dbName[:64]
+func NormalizeGuid(id string) string {
+	name := "d" + strings.Replace(id, "-", "", -1)
+	name = strings.Replace(name, "`", "", -1)
+	name = strings.Replace(name, ";", "", -1)
+	if len(name) > 64 {
+		name = name[:64]
 	}
 
-	return dbName
+	return name
 }
 func GetMD5Hash(text string, size int) (string, error) {
 	hasher := md5.New()
