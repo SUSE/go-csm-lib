@@ -17,24 +17,31 @@ func main() {
 	logger.RegisterSink(lager.NewWriterSink(os.Stdout, lager.DEBUG))
 
 	conf := config.RedisConfig{}
-	env.Parse(&conf)
-
+	err := env.Parse(&conf)
+	if err != nil {
+		logger.Fatal("main", err)
+	}
 	request, err := csm.GetCSMRequest(os.Args)
 	if err != nil {
-		logger.Error("main", err)
-		os.Exit(1)
+		logger.Fatal("main", err)
 	}
 
-	csmConnection := csm.NewCSMFileConnection(request.OutputPath)
+	csmConnection := csm.NewCSMFileConnection(request.OutputPath, logger)
 	prov := provisioner.NewRedisProvisioner(logger, conf)
 
 	extension := redis.NewRedisExtension(prov, conf, logger)
 
 	response, err := extension.GetConnection(request.WorkspaceID, request.ConnectionID)
 	if err != nil {
-		csmConnection.WriteError(err)
+		err := csmConnection.WriteError(err)
+		if err != nil {
+			logger.Fatal("main", err)
+		}
 		os.Exit(0)
 	}
 
-	csmConnection.Write(*response)
+	err = csmConnection.Write(*response)
+	if err != nil {
+		logger.Fatal("main", err)
+	}
 }
