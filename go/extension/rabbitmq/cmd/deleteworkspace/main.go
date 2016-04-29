@@ -31,7 +31,7 @@ func main() {
 
 	extension := rabbitmq.NewRabbitmqExtension(prov, conf, logger)
 
-	response, err := extension.DeleteConnection(request.WorkspaceID, request.ConnectionID)
+	response, err := extension.DeleteWorkspace(request.WorkspaceID)
 	if err != nil {
 		err := csmConnection.WriteError(err)
 		if err != nil {
