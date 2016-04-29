@@ -9,16 +9,20 @@ import (
 	"testing"
 
 	"github.com/hpcloud/sidecar-extensions/go/csm/status"
+	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )
 
+var logger *lagertest.TestLogger = lagertest.NewTestLogger("mysql-provisioner-test")
+
 func TestCSMFileConnectionWrite(t *testing.T) {
 	assert := assert.New(t)
+	logger = lagertest.NewTestLogger("csm-connection")
 
 	testFile, err := ioutil.TempFile(os.TempDir(), "prefix")
 	defer os.Remove(testFile.Name())
 
-	connection := NewCSMFileConnection(testFile.Name())
+	connection := NewCSMFileConnection(testFile.Name(), logger)
 
 	response := NewCSMResponse(200, "", status.Successful)
 	err = connection.Write(response)
@@ -42,7 +46,7 @@ func TestCSMFileConnectionWriteError(t *testing.T) {
 	testFile, err := ioutil.TempFile(os.TempDir(), "prefix")
 	defer os.Remove(testFile.Name())
 
-	connection := NewCSMFileConnection(testFile.Name())
+	connection := NewCSMFileConnection(testFile.Name(), logger)
 
 	err = connection.WriteError(errors.New("an error"))
 
@@ -66,7 +70,7 @@ func TestCSMFileConnectionWriteStruct(t *testing.T) {
 	fmt.Println(testFile.Name())
 	defer os.Remove(testFile.Name())
 
-	connection := NewCSMFileConnection(testFile.Name())
+	connection := NewCSMFileConnection(testFile.Name(), logger)
 	details := testDetails{One: "test", Two: 1}
 	response := NewCSMResponse(200, details, status.Successful)
 	err = connection.Write(response)

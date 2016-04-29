@@ -206,12 +206,12 @@ func (e *GoSqlProvisioner) CreateUser(databaseName string, username string, pass
 }
 
 func (e *GoSqlProvisioner) DeleteUser(username string) error {
-
-	err := e.executeTransaction(e.Connection, fmt.Sprintf("DROP USER '%s'", username))
-	err = e.connect()
+	err := e.connect()
 	if err != nil {
 		return err
 	}
+
+	err = e.executeTransaction(e.Connection, fmt.Sprintf("DROP USER '%s'", username))
 	if err != nil {
 		e.logger.Error("delete user", err)
 		return err
