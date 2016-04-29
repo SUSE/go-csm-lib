@@ -23,20 +23,26 @@ func NewGoSQL(logger lager.Logger, config config.MySQLConfig) MySQLProvisioner {
 func (e *GoSqlProvisioner) connect() error {
 	var err error
 
+	if e.isConnected {
+		return nil
+	}
+
 	e.Connection, err = e.openSqlConnection()
 	if err != nil {
 		return err
 	}
 	err = e.Connection.Ping()
-	return err
-}
-
-func (e *GoSqlProvisioner) Close() error {
-	err := e.Connection.Close()
+	if err == nil {
+		e.isConnected = true
+	}
 	return err
 }
 
 func (e *GoSqlProvisioner) IsDatabaseCreated(databaseName string) (bool, error) {
+	err := e.connect()
+	if err != nil {
+		return false, err
+	}
 	rows, err := e.Query("SHOW DATABASES WHERE `database` = ?", databaseName)
 	if err != nil {
 		return false, err
@@ -80,7 +86,10 @@ func (e *GoSqlProvisioner) IsDatabaseCreated(databaseName string) (bool, error) 
 }
 
 func (e *GoSqlProvisioner) IsUserCreated(userName string) (bool, error) {
-
+	err := e.connect()
+	if err != nil {
+		return false, err
+	}
 	rows, err := e.Query("SELECT user from mysql.user WHERE user = ?", userName)
 
 	if err != nil {
@@ -125,7 +134,12 @@ func (e *GoSqlProvisioner) IsUserCreated(userName string) (bool, error) {
 }
 
 func (e *GoSqlProvisioner) CreateDatabase(databaseName string) error {
-	err := e.executeTransaction(e.Connection, fmt.Sprintf("CREATE DATABASE %s", databaseName))
+	err := e.connect()
+	if err != nil {
+		return err
+	}
+
+	err = e.executeTransaction(e.Connection, fmt.Sprintf("CREATE DATABASE %s", databaseName))
 	if err != nil {
 		e.logger.Error("create database", err)
 		return err
@@ -135,7 +149,12 @@ func (e *GoSqlProvisioner) CreateDatabase(databaseName string) error {
 }
 
 func (e *GoSqlProvisioner) DeleteDatabase(databaseName string) error {
-	err := e.executeTransaction(e.Connection, fmt.Sprintf("DROP DATABASE %s", databaseName))
+	err := e.connect()
+	if err != nil {
+		return err
+	}
+
+	err = e.executeTransaction(e.Connection, fmt.Sprintf("DROP DATABASE %s", databaseName))
 	if err != nil {
 		e.logger.Error("delete database", err)
 		return err
@@ -144,8 +163,14 @@ func (e *GoSqlProvisioner) DeleteDatabase(databaseName string) error {
 }
 
 func (e *GoSqlProvisioner) Query(query string, args ...interface{}) (*sql.Rows, error) {
+
 	var err error
 	var result *sql.Rows
+	err = e.connect()
+	if err != nil {
+		return nil, err
+	}
+
 	if len(args) > 0 {
 		result, err = e.Connection.Query(query, args...)
 	} else {
@@ -161,7 +186,12 @@ func (e *GoSqlProvisioner) Query(query string, args ...interface{}) (*sql.Rows, 
 func (e *GoSqlProvisioner) CreateUser(databaseName string, username string, password string) error {
 
 	e.logger.Info("Connection open - executing transaction")
-	err := e.executeTransaction(e.Connection,
+	err := e.connect()
+	if err != nil {
+		return err
+	}
+
+	err = e.executeTransaction(e.Connection,
 		fmt.Sprintf("CREATE USER '%s' IDENTIFIED BY '%s';", username, password),
 		fmt.Sprintf("GRANT ALL PRIVILEGES ON %s.* TO '%s'@'%%';", databaseName, username),
 		"FLUSH PRIVILEGES;")
@@ -176,9 +206,12 @@ func (e *GoSqlProvisioner) CreateUser(databaseName string, username string, pass
 }
 
 func (e *GoSqlProvisioner) DeleteUser(username string) error {
+	err := e.connect()
+	if err != nil {
+		return err
+	}
 
-	err := e.executeTransaction(e.Connection, fmt.Sprintf("DROP USER '%s'", username))
-
+	err = e.executeTransaction(e.Connection, fmt.Sprintf("DROP USER '%s'", username))
 	if err != nil {
 		e.logger.Error("delete user", err)
 		return err
@@ -188,6 +221,7 @@ func (e *GoSqlProvisioner) DeleteUser(username string) error {
 }
 
 func (e *GoSqlProvisioner) openSqlConnection() (*sql.DB, error) {
+
 	con, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/mysql?interpolateParams=true", e.Conf.User, e.Conf.Pass, e.Conf.Host, e.Conf.Port))
 	if err != nil {
 		return nil, err
