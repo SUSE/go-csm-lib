@@ -1,4 +1,4 @@
-package provisioner_test
+package provisioner
 
 import (
 	"log"
@@ -6,14 +6,14 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/hpcloud/sidecar-extensions/go/extension/mysql/config"
-	"github.com/hpcloud/sidecar-extensions/go/extension/mysql/provisioner"
+
 	"github.com/pivotal-golang/lager/lagertest"
 	"gopkg.in/caarlos0/env.v2"
 )
 
 var logger *lagertest.TestLogger = lagertest.NewTestLogger("mysql-provisioner-test")
 
-func getProvisioner() provisioner.MySQLProvisioner {
+func getProvisioner() MySQLProvisioner {
 
 	mysqlConfig := config.MySQLConfig{}
 
@@ -26,7 +26,7 @@ func getProvisioner() provisioner.MySQLProvisioner {
 	if mysqlConfig.User == "" || mysqlConfig.Pass == "" || mysqlConfig.Host == "" || mysqlConfig.Port == "" {
 		return nil
 	}
-	mysqlProvisioner := provisioner.NewGoSQL(logger, mysqlConfig)
+	mysqlProvisioner := NewGoSQL(logger, mysqlConfig)
 
 	return mysqlProvisioner
 }

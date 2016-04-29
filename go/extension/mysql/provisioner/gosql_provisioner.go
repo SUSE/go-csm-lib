@@ -10,16 +10,17 @@ import (
 )
 
 type GoSqlProvisioner struct {
-	Conf       config.MySQLConfig
-	Connection *sql.DB
-	logger     lager.Logger
+	Conf        config.MySQLConfig
+	Connection  *sql.DB
+	logger      lager.Logger
+	isConnected bool
 }
 
 func NewGoSQL(logger lager.Logger, config config.MySQLConfig) MySQLProvisioner {
 	return &GoSqlProvisioner{logger: logger, Conf: config}
 }
 
-func (e *GoSqlProvisioner) Connect() error {
+func (e *GoSqlProvisioner) connect() error {
 	var err error
 
 	e.Connection, err = e.openSqlConnection()

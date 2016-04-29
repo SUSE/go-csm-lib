@@ -3,7 +3,6 @@ package provisioner
 import "database/sql"
 
 type MySQLProvisioner interface {
-	Connect() error
 	IsDatabaseCreated(string) (bool, error)
 	IsUserCreated(string) (bool, error)
 	CreateDatabase(string) error

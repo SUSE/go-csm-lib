@@ -26,7 +26,7 @@ func NewMySQLExtension(prov provisioner.MySQLProvisioner,
 func (e *mysqlExtension) CreateConnection(workspaceID, connectionID string) (*csm.CSMResponse, error) {
 	e.logger.Info("create-connection", lager.Data{"workspaceID": workspaceID, "connectionID": connectionID})
 
-	dbName := util.NormalizeID(workspaceID)
+	dbName := util.NormalizeGuid(workspaceID)
 
 	username, err := util.GetMD5Hash(connectionID, userSize)
 	if err != nil {
@@ -59,7 +59,7 @@ func (e *mysqlExtension) CreateConnection(workspaceID, connectionID string) (*cs
 }
 func (e *mysqlExtension) CreateWorkspace(workspaceID string) (*csm.CSMResponse, error) {
 	e.logger.Info("create-workspace", lager.Data{"workspaceID": workspaceID})
-	dbName := util.NormalizeID(workspaceID)
+	dbName := util.NormalizeGuid(workspaceID)
 	err := e.prov.CreateDatabase(dbName)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func (e *mysqlExtension) DeleteConnection(workspaceID, connectionID string) (*cs
 func (e *mysqlExtension) DeleteWorkspace(workspaceID string) (*csm.CSMResponse, error) {
 	e.logger.Info("delete-workspace", lager.Data{"workspaceID": workspaceID})
 
-	database := util.NormalizeID(workspaceID)
+	database := util.NormalizeGuid(workspaceID)
 	err := e.prov.DeleteDatabase(database)
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (e *mysqlExtension) GetConnection(workspaceID, connectionID string) (*csm.C
 	return &response, nil
 }
 func (e *mysqlExtension) GetWorkspace(workspaceID string) (*csm.CSMResponse, error) {
-	database := util.NormalizeID(workspaceID)
+	database := util.NormalizeGuid(workspaceID)
 
 	exists, err := e.prov.IsDatabaseCreated(database)
 	if err != nil {
