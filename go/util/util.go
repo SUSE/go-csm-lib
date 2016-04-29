@@ -5,6 +5,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
+	"net"
 	"regexp"
 	"strings"
 )
@@ -41,4 +43,29 @@ func SecureRandomString(bytesOfEntpry int) (string, error) {
 	}
 
 	return base64.RawURLEncoding.EncodeToString(rb), nil
+}
+
+func GetLocalIP() (string, error) {
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return "", err
+	}
+	for _, inface := range interfaces {
+		addresses, err := inface.Addrs()
+		if err != nil {
+			return "", err
+		}
+		for _, address := range addresses {
+			ipnet, ok := address.(*net.IPNet)
+			if !ok {
+				continue
+			}
+			ip := ipnet.IP.To4()
+			if ip == nil || ip.IsLoopback() {
+				continue
+			}
+			return ip.String(), nil
+		}
+	}
+	return "", fmt.Errorf("Could not find IP address")
 }
