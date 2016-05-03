@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/hpcloud/sidecar-extensions/go/csm/status"
+	"github.com/hpcloud/go-csm-lib/csm/status"
 	"github.com/pivotal-golang/lager"
 )
 

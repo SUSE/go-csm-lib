@@ -1,2 +1,2 @@
 # sidecar-extensions
-Repository containing sidecar extensions
+Repository containing go library for sidecar extensions 

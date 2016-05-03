@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hpcloud/sidecar-extensions/go/csm/status"
+	"github.com/hpcloud/go-csm-lib/csm/status"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )
