@@ -3,7 +3,7 @@ package csm
 import (
 	"testing"
 
-	"github.com/hpcloud/sidecar-extensions/go/csm/status"
+	"github.com/hpcloud/go-csm-lib/csm/status"
 	"github.com/stretchr/testify/assert"
 )
 

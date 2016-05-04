@@ -1,6 +1,6 @@
 package csm
 
-import "github.com/hpcloud/sidecar-extensions/go/csm/status"
+import "github.com/hpcloud/go-csm-lib/csm/status"
 
 type CSMResponse struct {
 	HttpCode       int         `json:"http_code"`

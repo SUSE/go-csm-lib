@@ -1,7 +1,7 @@
 package extension
 
 import (
-	"github.com/hpcloud/sidecar-extensions/go/csm"
+	"github.com/hpcloud/go-csm-lib/csm"
 )
 
 type Extension interface {
