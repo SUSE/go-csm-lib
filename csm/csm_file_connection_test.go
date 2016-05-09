@@ -8,7 +8,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hpcloud/go-csm-lib/csm/status"
 	"github.com/pivotal-golang/lager/lagertest"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,7 +23,7 @@ func TestCSMFileConnectionWrite(t *testing.T) {
 
 	connection := NewCSMFileConnection(testFile.Name(), logger)
 
-	response := NewCSMResponse(200, "", status.Successful)
+	response := CreateCSMResponse("")
 	err = connection.Write(response)
 
 	assert.Nil(err)
@@ -35,9 +34,8 @@ func TestCSMFileConnectionWrite(t *testing.T) {
 	newResponse := CSMResponse{}
 	err = json.Unmarshal(content, &newResponse)
 	assert.Nil(err)
-	assert.Equal(200, newResponse.HttpCode)
+	assert.Equal(0, newResponse.ErrorCode)
 	assert.Equal("", newResponse.Details)
-	assert.Equal("Extension", newResponse.ProcessingType)
 }
 
 func TestCSMFileConnectionWriteError(t *testing.T) {
@@ -58,9 +56,8 @@ func TestCSMFileConnectionWriteError(t *testing.T) {
 	newResponse := CSMResponse{}
 	err = json.Unmarshal(content, &newResponse)
 	assert.Nil(err)
-	assert.Equal(500, newResponse.HttpCode)
-	assert.Equal("an error", newResponse.Details)
-	assert.Equal("Extension", newResponse.ProcessingType)
+	assert.Equal(500, newResponse.ErrorCode)
+	assert.Equal("an error", newResponse.ErrorMessage)
 }
 
 func TestCSMFileConnectionWriteStruct(t *testing.T) {
@@ -72,7 +69,7 @@ func TestCSMFileConnectionWriteStruct(t *testing.T) {
 
 	connection := NewCSMFileConnection(testFile.Name(), logger)
 	details := testDetails{One: "test", Two: 1}
-	response := NewCSMResponse(200, details, status.Successful)
+	response := CreateCSMResponse(details)
 	err = connection.Write(response)
 
 	assert.Nil(err)
@@ -83,7 +80,7 @@ func TestCSMFileConnectionWriteStruct(t *testing.T) {
 	newResponse := CSMResponse{}
 	err = json.Unmarshal(content, &newResponse)
 	assert.Nil(err)
-	assert.Equal(200, newResponse.HttpCode)
+	assert.Equal(0, newResponse.ErrorCode)
 
 	assert.Equal("test", newResponse.Details.(map[string]interface{})["One"])
 
@@ -91,5 +88,4 @@ func TestCSMFileConnectionWriteStruct(t *testing.T) {
 	twoValue = 1
 	assert.Equal(twoValue, newResponse.Details.(map[string]interface{})["Two"])
 
-	assert.Equal("Extension", newResponse.ProcessingType)
 }
