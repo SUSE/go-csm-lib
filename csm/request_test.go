@@ -42,7 +42,7 @@ func TestCSMRequestFail(t *testing.T) {
 	workspaceID := "905ab3af-b149-46b6-bc6e-75073c703e19"
 	outFile := "/home/user/myfile"
 
-	args := []string{"exe", outFile, workspaceID, "extrastring", "extrastring"}
+	args := []string{"exe", outFile, workspaceID, "extrastring", "extrastring", "extrastring"}
 
 	_, err := GetCSMRequest(args)
 
